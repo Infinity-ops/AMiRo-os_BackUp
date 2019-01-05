@@ -109,11 +109,11 @@
                                  PIN_MODE_INPUT_PULLX(GPIOB_WL_GDO0) | \
                                  PIN_MODE_ALTERNATE_OPENDRAIN(GPIOB_MEM_SCL) | \
                                  PIN_MODE_ALTERNATE_OPENDRAIN(GPIOB_MEM_SDA) | \
-                                 PIN_MODE_OUTPUT_PUSHPULL(GPIOB_WL_SS_N) | \
+                                 PIN_MODE_ALTERNATE_PUSHPULL(GPIOB_WL_SS_N) | \
                                  PIN_MODE_ALTERNATE_PUSHPULL(GPIOB_WL_SCLK) | \
-                                 PIN_MODE_INPUT(GPIOB_WL_MISO) | \
-                                 PIN_MODE_ALTERNATE_PUSHPULL(GPIOB_WL_MOSI))
-#define VAL_GPIOBODR            0xFFFB /* initially LASER_EN is deactivated */
+                                 PIN_MODE_OUTPUT_PUSHPULL(GPIOB_WL_MISO) | \
+                                 PIN_MODE_INPUT(GPIOB_WL_MOSI))
+#define VAL_GPIOBODR             0xFFFB /* initially LASER_EN is deactivated */
 
 /*
  * Port C setup.

@@ -515,7 +515,8 @@ int main(void) {
    *   RTOS is active.
    */
   halInit();
-  i2sInit();
+
+
   System::init();
 
   /*

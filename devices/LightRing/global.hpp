@@ -62,9 +62,9 @@ public:
   // };
 
   //I2S driver global implementation
-  #define I2S_BUF_SIZE        256
-  uint16_t i2s_rx_buf[I2S_BUF_SIZE];
-  uint16_t i2s_tx_buf[I2S_BUF_SIZE];
+  #define I2S_BUF_SIZE        8192
+  uint32_t i2s_rx_buf[I2S_BUF_SIZE] ={ };
+
 
   //dummy function
   static void i2scallback(I2SDriver *i2sp, size_t offset, size_t n){
@@ -72,14 +72,18 @@ public:
     (void)offset;
     (void)n;
   }
+//  (0 << 4)|(1 << 3) | (1 << 2) |(0 << 1)|(1 << 0),
+//  (17 << 0) | (1 << 8)
+//SPI_I2SCFGR_DATLEN_0 | SPI_I2SCFGR_CKPOL
+  // (0<< 4)|(0<< 3)|(1<<1)|(1<<0)
 
-  I2SConfig i2scfg {
-    i2s_tx_buf,
+  I2SConfig i2scfg = {
+    NULL,
     i2s_rx_buf,
     I2S_BUF_SIZE,
     i2scallback,
-    SPI_I2SCFGR_CHLEN,
-    SPI_I2SPR_MCKOE
+    (0 << 4)|(1 << 3) | (1 << 2) |(0 << 1)|(1 << 0),
+    (17 << 0) | (1 << 8)
   };
 
   /**
