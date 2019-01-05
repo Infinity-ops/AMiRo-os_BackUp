@@ -80,6 +80,7 @@ UserThread::main()
 //      chprintf((BaseSequentialStream*) &global.sercanmux1,"%f s",meanval );
 
       //DFT
+
       for(int k=0; k < I2S_BUF_SIZE; k++){
           double sumReal= 0;
           double sumImg= 0;
@@ -98,6 +99,48 @@ UserThread::main()
 
   return RDY_OK;
 }
+
+void fourier_analysis_two_channel() {
+
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"k, d1, absolute, absolute_32, i2s_fft_buf[k]\n");
+    double PI = 3.141592653589793238460;
+
+    for (size_t i = 1, k = 0; i < I2S_BUF_SIZE; i += 2) {
+        uint32_t raw1 = global.i2s_rx_buf[i] & 0x0000FFFF;
+        int16_t d1 = raw1 & 0x0000FFFF;
+        int32_t d_1_32 = ((raw1 & 0x0000FFFF) << 16) | ((raw1 & 0xFFFF0000) >> 16);
+
+        double fft_val_real = 0.0;
+        double fft_val_imag = 0.0;
+        double fft_val_real_32 = 0.0;
+        double fft_val_imag_32 = 0.0;
+
+        for (size_t j = 1, n = 0; j < I2S_BUF_SIZE; j += 2) {
+
+            uint32_t raw = global.i2s_rx_buf[j];
+            int16_t d = raw & 0x0000FFFF;
+            int32_t d_32 = ((raw & 0x0000FFFF) << 16) | ((raw & 0xFFFF0000) >> 16);
+
+            Complex fft_val = std::polar(1.0, -2 * PI * k * n / (999)) * (d*1.0);
+            Complex fft_val_32 = std::polar(1.0, -2 * PI * k * n / (999)) * (d_32*1.0);
+
+            fft_val_real += real(fft_val);
+            fft_val_imag += imag(fft_val);
+            fft_val_real_32 += real(fft_val_32);
+            fft_val_imag_32 += imag(fft_val_32);
+
+            n++;
+        }
+
+
+        double absolute = sqrt(pow(fft_val_real, 2.0) + pow(fft_val_imag, 2.0));
+        double absolute_32 = sqrt(pow(fft_val_real_32, 2.0) + pow(fft_val_imag_32, 2.0));
+
+        i2s_fft_buf[k] = absolute;
+        k++;
+
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d,%f,%f,%f\n", k, d1, absolute, absolute_32, i2s_fft_buf[k]); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
+    }
 
 
 
