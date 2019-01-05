@@ -2,6 +2,8 @@
 #include <chprintf.h>
 #include <ctime>
 #include <hal.h>
+#include <complex>
+#include <math.h>
 #include "global.hpp"
 
 
@@ -9,6 +11,8 @@ using namespace amiro;
 
 
 extern Global global;
+
+typedef std::complex<double> Complex;
 
 UserThread::UserThread() :
     chibios_rt::BaseStaticThread<USER_THREAD_STACK_SIZE>()
@@ -40,25 +44,37 @@ UserThread::main()
 
     uint16_t samples[I2S_BUF_SIZE];
     //  float meanval = 0;
-    //  double PI = 3.14159265358;
+    double PI = 3.141592653589793238460;
+
+
     while (!this->shouldTerminate())
     {
         // int index = 0;
-        for(int i=1, j = 0; i < I2S_BUF_SIZE; i+=2, j++)
+        for(int i=1, k = 0; i < I2S_BUF_SIZE; i+=2, k++)
         {
 
             samples[i] = (global.i2s_rx_buf[i] & 0xFFFF);
-            chprintf((BaseSequentialStream*) &global.sercanmux1, " %d, %d,%08X\n", j,samples[i], samples[i] );
+            // chprintf((BaseSequentialStream*) &global.sercanmux1, " %d, %d,%08X\n", k,samples[i], samples[i] );
 
+            double fft_val_real = 0.0;
+            double fft_val_imag = 0.0;
+
+            for(int j = 1, n = 0; j < I2S_BUF_SIZE; j += 2, n++){
+                Complex fft_val = std::polar(1.0, -2 * PI * k * n / (I2S_BUF_SIZE - 1)) * (samples[i] * 1.0);
+                fft_val_real += real(fft_val);
+                fft_val_imag += imag(fft_val);
+            }
+
+            double absolute = sqrt(pow(fft_val_real, 2.0) + pow(fft_val_imag, 2.0));
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d, %f,%f\n", k, samples[i],(32000.0 * k / 1024.0), absolute); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
         }
-
-
 
     }
 
     return RDY_OK;
 }
 
+/*
 void fourier_analysis_two_channel() {
 
     chprintf((BaseSequentialStream*)&global.sercanmux1,"k, d1, absolute, absolute_32, i2s_fft_buf[k]\n");
@@ -101,3 +117,4 @@ void fourier_analysis_two_channel() {
         chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d,%f,%f,%f\n", k, d1, absolute, absolute_32, i2s_fft_buf[k]); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
     }
 }
+*/
