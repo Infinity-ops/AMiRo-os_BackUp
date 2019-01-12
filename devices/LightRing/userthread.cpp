@@ -54,19 +54,20 @@ UserThread::main()
         {
 
             samples[i] = (global.i2s_rx_buf[i] & 0xFFFF);
-            // chprintf((BaseSequentialStream*) &global.sercanmux1, " %d, %d,%08X\n", k,samples[i], samples[i] );
+//            chprintf((BaseSequentialStream*) &global.sercanmux1, " %d, %d,%08X\n", k,samples[i], samples[i] );
 
-            double fft_val_real = 0.0;
-            double fft_val_imag = 0.0;
+//            double fft_val_real = 0.0;
+//            double fft_val_imag = 0.0;
 
-            for(int j = 1, n = 0; j < I2S_BUF_SIZE; j += 2, n++){
-                Complex fft_val = std::polar(1.0, -2 * PI * k * n / (I2S_BUF_SIZE - 1)) * (samples[i] * 1.0);
-                fft_val_real += real(fft_val);
-                fft_val_imag += imag(fft_val);
-            }
+//            for(int j = 1, n = 0; j < I2S_BUF_SIZE; j += 2, n++){
+//                Complex fft_val = std::polar(1.0, -2 * PI * k * n / (I2S_BUF_SIZE - 1)) * (samples[i] * 1.0);
+//                fft_val_real += real(fft_val);
+//                fft_val_imag += imag(fft_val);
+//            }
 
-            double absolute = sqrt(pow(fft_val_real, 2.0) + pow(fft_val_imag, 2.0));
-            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d, %f,%f\n", k, samples[i],(32000.0 * k / 1024.0), absolute); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
+//            double absolute = sqrt(pow(fft_val_real, 2.0) + pow(fft_val_imag, 2.0));
+//            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d, %f,%f\n", k, samples[i],(32000.0 * k / 1024.0), absolute); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d, %f,%f\n", k, samples[i]); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
         }
 
     }
