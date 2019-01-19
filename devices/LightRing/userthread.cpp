@@ -76,6 +76,7 @@ UserThread::main()
     // FFT YAZ Debug
     std::vector<cd> a{1, 2, 3, 4};
     std::vector<cd> b = fft(a);
+    std::vector<cd> dataComplex;
 //    for (int i = 0; i < 4; i++)
 //        std::cout << b[i] << std::endl;
 
@@ -152,9 +153,11 @@ UserThread::main()
 
             // "data" is what you want aka the correct data
             float dataFloat = static_cast<float>(data);
+            dataComplex.push_back(dataFloat);
             // put this value to a vector of complex<float>
 
         }
+        std::vector<cd> fftResult = fft(dataComplex);
 
         this->sleep(MS2ST(1000));
         this->sleep(MS2ST(1000));
