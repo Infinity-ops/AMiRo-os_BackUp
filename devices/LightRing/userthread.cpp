@@ -139,6 +139,19 @@ UserThread::main()
         }
         chprintf((BaseSequentialStream*)&global.sercanmux1,"Printing Finished\n");
 
+
+        // FFT Call
+        for(int i = 1; i < I2S_BUF_SIZE; i = i+2)
+        {
+            uint32_t raw = global.i2s_rx_buf[i];
+            int16_t data = (raw & 0xFFFF);
+            if(data == 0){
+                data = (raw >> 16) & 0xFFFF;
+            }
+
+            // "data" is what you want aka the correct data
+        }
+
         this->sleep(MS2ST(1000));
         this->sleep(MS2ST(1000));
         this->sleep(MS2ST(1000));
