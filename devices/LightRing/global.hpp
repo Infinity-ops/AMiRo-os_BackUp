@@ -62,7 +62,7 @@ public:
   // };
 
   //I2S driver global implementation
-  #define I2S_BUF_SIZE        300
+  #define I2S_BUF_SIZE        100
   uint32_t i2s_rx_buf[I2S_BUF_SIZE] ={ };
 
 
