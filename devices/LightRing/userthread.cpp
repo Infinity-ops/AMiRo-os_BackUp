@@ -73,6 +73,13 @@ std::vector<cd> fft(std::vector<cd>& a)
 msg_t
 UserThread::main()
 {
+    this->sleep(MS2ST(1000));
+    this->sleep(MS2ST(1000));
+    this->sleep(MS2ST(1000));
+    this->sleep(MS2ST(1000));
+    this->sleep(MS2ST(1000));
+    this->sleep(MS2ST(1000));
+
     // FFT YAZ Debug
     std::vector<cd> a{1, 2, 3, 4};
     std::vector<cd> b = fft(a);
@@ -85,9 +92,9 @@ UserThread::main()
 
 
 
-    uint16_t samples[I2S_BUF_SIZE];
+    // uint16_t samples[I2S_BUF_SIZE];
     //  float meanval = 0;
-    double PI = 3.141592653589793238460;
+    // double PI = 3.141592653589793238460;
 
     int cycleNumber = 0;
 
@@ -102,7 +109,7 @@ UserThread::main()
         this->sleep(MS2ST(1000));
         i2sStartExchange(&I2SD2);
 
-        for(int i=0; i < 16; i++)
+        for(int i=0; i < 36; i++)
         {
             this->sleep(MS2ST(1000));
             chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
@@ -114,7 +121,7 @@ UserThread::main()
         chprintf((BaseSequentialStream*)&global.sercanmux1,"Input finished\n");
         // input end
 
-
+        /*
         // int index = 0;
         chprintf((BaseSequentialStream*)&global.sercanmux1,"Printing Started\n");
         for(int i=1, k = 0; i < I2S_BUF_SIZE; i+=1, k++)
@@ -140,7 +147,7 @@ UserThread::main()
             chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, samples[i]); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
         }
         chprintf((BaseSequentialStream*)&global.sercanmux1,"Printing Finished\n");
-
+        */
 
         // FFT Call
         for(int i = 1; i < I2S_BUF_SIZE; i = i+2)
@@ -152,12 +159,14 @@ UserThread::main()
             }
 
             // "data" is what you want aka the correct data
-            float dataFloat = static_cast<float>(data);
-            dataComplex.push_back(dataFloat);
+            // float dataFloat = static_cast<float>(data);
+            // dataComplex.push_back(dataFloat);
             // put this value to a vector of complex<float>
 
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
+
         }
-        std::vector<cd> fftResult = fft(dataComplex);
+        // std::vector<cd> fftResult = fft(dataComplex);
 
         this->sleep(MS2ST(1000));
         this->sleep(MS2ST(1000));
