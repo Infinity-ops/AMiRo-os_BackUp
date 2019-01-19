@@ -72,6 +72,12 @@ std::vector<cd> fft(std::vector<cd>& a)
 msg_t
 UserThread::main()
 {
+    // FFT YAZ Debug
+    std::vector<cd> a{1, 2, 3, 4};
+    std::vector<cd> b = fft(a);
+//    for (int i = 0; i < 4; i++)
+//        std::cout << b[i] << std::endl;
+
     chprintf((BaseSequentialStream*) &global.sercanmux1, "Init/n");
     i2sInit();
 
