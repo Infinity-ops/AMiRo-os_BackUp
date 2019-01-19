@@ -30,30 +30,48 @@ UserThread::main()
 {
     chprintf((BaseSequentialStream*) &global.sercanmux1, "Init/n");
     i2sInit();
-    i2sStart(&I2SD2, &global.i2scfg);
-    i2sStartExchange(&I2SD2);
 
-    for(int i=0; i< 72; i++)
-    {
-        this->sleep(MS2ST(1000));
-        chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
-    }
-
-    i2sStopExchange(&I2SD2);
 
 
     uint16_t samples[I2S_BUF_SIZE];
     //  float meanval = 0;
     double PI = 3.141592653589793238460;
 
+    int cycleNumber = 0;
+
+    i2sStart(&I2SD2, &global.i2scfg);
 
     while (!this->shouldTerminate())
     {
+
+        // input start
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"%d : Input started\n", cycleNumber++);
+
+        this->sleep(MS2ST(1000));
+        i2sStartExchange(&I2SD2);
+
+        for(int i=0; i < 16; i++)
+        {
+            this->sleep(MS2ST(1000));
+            chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
+        }
+
+        i2sStopExchange(&I2SD2);
+        this->sleep(MS2ST(1000));
+
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"Input finished\n");
+        // input end
+
+
         // int index = 0;
-        for(int i=1, k = 0; i < I2S_BUF_SIZE; i+=2, k++)
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"Printing Started\n");
+        for(int i=1, k = 0; i < I2S_BUF_SIZE; i+=1, k++)
         {
 
             samples[i] = (global.i2s_rx_buf[i] & 0xFFFF);
+//            samples[i] = global.i2s_rx_buf[i];
+
+
 //            chprintf((BaseSequentialStream*) &global.sercanmux1, " %d, %d,%08X\n", k,samples[i], samples[i] );
 
 //            double fft_val_real = 0.0;
@@ -67,10 +85,17 @@ UserThread::main()
 
 //            double absolute = sqrt(pow(fft_val_real, 2.0) + pow(fft_val_imag, 2.0));
 //            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d, %f,%f\n", k, samples[i],(32000.0 * k / 1024.0), absolute); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
-            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d, %f,%f\n", k, samples[i]); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, samples[i]); //(k->value, raw(d1)->data, absolute or i2i2s_fft_buf -> complex)
         }
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"Printing Finished\n");
+
+        this->sleep(MS2ST(1000));
+        this->sleep(MS2ST(1000));
+        this->sleep(MS2ST(1000));
 
     }
+
+    i2sStop(&I2SD2);
 
     return RDY_OK;
 }
