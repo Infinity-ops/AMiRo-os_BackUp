@@ -5,6 +5,7 @@
 #include <complex>
 #include <math.h>
 #include <vector>
+#include <iostream>
 #include "global.hpp"
 
 
@@ -15,7 +16,7 @@ extern Global global;
 
 // For storing complex values of nth roots
 // of unity we use complex<double>
-typedef std::complex<double> cd;
+typedef std::complex<float> cd;
 
 UserThread::UserThread() :
     chibios_rt::BaseStaticThread<USER_THREAD_STACK_SIZE>()
@@ -150,6 +151,9 @@ UserThread::main()
             }
 
             // "data" is what you want aka the correct data
+            float dataFloat = static_cast<float>(data);
+            // put this value to a vector of complex<float>
+
         }
 
         this->sleep(MS2ST(1000));
