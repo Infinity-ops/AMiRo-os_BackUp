@@ -178,9 +178,8 @@ UserThread::main()
             }
 
             // "data" is what you want aka the correct data
-            float dataFloat = static_cast<float>(data);
             // put this value to a vector of complex<float>
-            fftInput.at(k) = dataFloat;
+            fftInput.at(k) = static_cast<float>(data);
             chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
 
         }
