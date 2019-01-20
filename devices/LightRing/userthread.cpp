@@ -186,17 +186,17 @@ UserThread::main()
         }
 
         chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT Start\n");
-        std::vector<cd> fftResult = fft(fftInput);
+        std::vector<cd> fftOutput = fft(fftInput);
         chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT End\n");
 
         chprintf((BaseSequentialStream*)&global.sercanmux1,"Index,Data,Frequency,Real,Imaginary,Abs\n");
-        int fftOutput = fftResult.size();
+        int fftOutputSize = fftOutput.size();
         float dataComplexSize = static_cast<float>(fftInput.size());
-        for(int i = 0; i < fftOutput; i++)
+        for(int i = 0; i < fftOutputSize; i++)
         {
             frequency = 32000.0 / dataComplexSize * static_cast<float>(i);
 
-            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%f,%f,%f,%f,%f\n", i, fftInput.at(i).real(), frequency, fftResult.at(i).real(), fftResult.at(i).imag(), std::abs(fftResult.at(i)));
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%f,%f,%f,%f,%f\n", i, fftInput.at(i).real(), frequency, fftOutput.at(i).real(), fftOutput.at(i).imag(), std::abs(fftOutput.at(i)));
         }
 
         this->sleep(MS2ST(1000));
