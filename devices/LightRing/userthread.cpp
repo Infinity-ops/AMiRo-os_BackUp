@@ -181,7 +181,7 @@ UserThread::main()
             float dataFloat = static_cast<float>(data);
             // put this value to a vector of complex<float>
             fftInput.at(k) = dataFloat;
-//            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
 
         }
 
@@ -196,7 +196,7 @@ UserThread::main()
         {
             frequency = 32000.0 / dataComplexSize * static_cast<float>(i);
 
-            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d,%f,%f,%f,%f\n", i, fftInput.at(i).real(), frequency, fftResult.at(i).real(), fftResult.at(i).imag(), std::abs(fftResult.at(i)));
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%f,%f,%f,%f,%f\n", i, fftInput.at(i).real(), frequency, fftResult.at(i).real(), fftResult.at(i).imag(), std::abs(fftResult.at(i)));
         }
 
         this->sleep(MS2ST(1000));
