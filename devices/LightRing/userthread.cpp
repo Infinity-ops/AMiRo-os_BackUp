@@ -87,16 +87,18 @@ UserThread::main()
     this->sleep(MS2ST(1000));
 
     // FFT YAZ Debug
-    std::vector<cd> a{1, 2, 3, 4};
-    std::vector<cd> b = fft(a);
+//    std::vector<cd> a{1, 2, 3, 4};
+//    std::vector<cd> b = fft(a);
+//    for (int i = 0; i < 4; i++)
+//    {
+//        std::cout << b[i] << std::endl;
+//    }
 
     std::vector<cd> fftInput;
     fftInput.resize(I2S_BUF_SIZE/2);
     std::vector<cd> fftResult;
     fftInput.resize(I2S_BUF_SIZE/2);
 
-//    for (int i = 0; i < 4; i++)
-//        std::cout << b[i] << std::endl;
 
     chprintf((BaseSequentialStream*) &global.sercanmux1, "Init/n");
     i2sInit();
@@ -109,28 +111,31 @@ UserThread::main()
 
     int cycleNumber = 0;
 
-    i2sStart(&I2SD2, &global.i2scfg);
+
 
     while (!this->shouldTerminate())
     {
 
         // input start
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"%d : Input started\n", cycleNumber++);
 
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"\n%d : Input started\n", cycleNumber++);
+
+        i2sStart(&I2SD2, &global.i2scfg);
         this->sleep(MS2ST(1000));
         i2sStartExchange(&I2SD2);
 
-        int restTime = 6;
+        int restTime = 56;
         for(int i=0; i < restTime; i++)
         {
             this->sleep(MS2ST(1000));
-            chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
+            // chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
         }
 
         i2sStopExchange(&I2SD2);
+        i2sStop(&I2SD2);
         this->sleep(MS2ST(1000));
 
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"Input finished\n");
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"\nInput finished\n");
         // input end
 
         /*
@@ -168,6 +173,7 @@ UserThread::main()
         this->sleep(MS2ST(1000));
 
 
+        std::vector<int16_t> dataVec;
         float frequency = 0;
         for(int i = 1,k=0; i < I2S_BUF_SIZE; i = i+2,k++)
         {
@@ -181,30 +187,39 @@ UserThread::main()
             // put this value to a vector of complex<float>
             fftInput.at(k) = static_cast<float>(data);
             chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
+            dataVec.push_back(data);
+            // chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,", data);
 
         }
 
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT Start\n");
-        std::vector<cd> fftOutput = fft(fftInput);
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT End\n");
-
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"Index,Data,Frequency,Real,Imaginary,Abs\n");
-        int fftOutputSize = fftOutput.size();
-        float dataComplexSize = static_cast<float>(fftInput.size());
-        for(int i = 0; i < fftOutputSize; i++)
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"\nDataVec\n");
+        for(int i = 0; i < dataVec.size(); i++)
         {
-            frequency = 32000.0 / dataComplexSize * static_cast<float>(i);
-
-            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%f,%f,%f,%f,%f\n", i, fftInput.at(i).real(), frequency, fftOutput.at(i).real(), fftOutput.at(i).imag(), std::abs(fftOutput.at(i)));
+            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,", dataVec.at(i));
         }
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"\nDataVec\n");
+
+//        // FFT Start
+//        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT Start\n");
+//        std::vector<cd> fftOutput = fft(fftInput);
+//        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT End\n");
+
+//        chprintf((BaseSequentialStream*)&global.sercanmux1,"Index,Data,Frequency,Real,Imaginary,Abs\n");
+//        int fftOutputSize = fftOutput.size();
+//        float dataComplexSize = static_cast<float>(fftInput.size());
+//        for(int i = 0; i < fftOutputSize; i++)
+//        {
+//            frequency = 32000.0 / dataComplexSize * static_cast<float>(i);
+
+//            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%f,%f,%f,%f,%f\n", i, fftInput.at(i).real(), frequency, fftOutput.at(i).real(), fftOutput.at(i).imag(), std::abs(fftOutput.at(i)));
+//        }
+//        // FFT End
 
         this->sleep(MS2ST(1000));
         this->sleep(MS2ST(1000));
         this->sleep(MS2ST(1000));
 
     }
-
-    i2sStop(&I2SD2);
 
     return RDY_OK;
 }
