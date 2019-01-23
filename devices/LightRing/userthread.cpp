@@ -3,13 +3,18 @@
 #include <ctime>
 #include <hal.h>
 #include <complex>
-#include <math.h>
 #include <vector>
 #include <iostream>
+#include <cmath>
 #include "global.hpp"
 
 
 using namespace amiro;
+
+using std::size_t;
+using std::vector;
+using std::complex;
+using std::exp;
 
 
 extern Global global;
@@ -61,6 +66,21 @@ void UserThread::microphoneInput()
     // input end
 }
 
+
+vector<complex<float> > computeDft(const vector<complex<float> > &input) {
+
+    vector<complex<float> > output;
+    size_t n = input.size();
+    for (size_t k = 0; k < n; k++) {  // For each output element
+        complex<float> sum(0.0, 0.0);
+        for (size_t t = 0; t < n; t++) {  // For each input element
+            float angle = 2 * M_PI * t * k / n;
+            sum += input[t] * exp(-angle);
+        }
+        output.push_back(sum);
+    }
+    return output;
+}
 
 // Recursive function of FFT
 std::vector<cd> fft(std::vector<cd>& a)
@@ -142,14 +162,15 @@ UserThread::main()
 
         // microphoneInput();
 
+
         /*
+        // DFT
         // int index = 0;
         chprintf((BaseSequentialStream*)&global.sercanmux1,"Printing Started\n");
         for(int i=1, k = 0; i < I2S_BUF_SIZE; i+=1, k++)
         {
 
-            samples[i] = (global.i2s_rx_buf[i] & 0xFFFF);
-//            samples[i] = global.i2s_rx_buf[i];
+//            samples[i] = (global.i2s_rx_buf[i] & 0xFFFF);
 
 
 //            chprintf((BaseSequentialStream*) &global.sercanmux1, " %d, %d,%08X\n", k,samples[i], samples[i] );

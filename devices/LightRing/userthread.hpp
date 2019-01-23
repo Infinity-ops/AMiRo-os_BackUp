@@ -3,6 +3,8 @@
 
 #include <ch.hpp>
 #include <amiroosconf.h>
+#include <vector>
+#include <complex>
 
 namespace amiro {
 
@@ -18,6 +20,7 @@ private:
     int cycleNumber;
     void microphoneInput();
     void sleepForSec(int inSeconds);
+    std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input);
 };
 
 } // end of namespace amiro
