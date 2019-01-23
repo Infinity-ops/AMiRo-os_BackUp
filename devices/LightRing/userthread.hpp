@@ -17,6 +17,7 @@ public:
 private:
     int cycleNumber;
     void microphoneInput();
+    void sleep(int inSeconds);
 };
 
 } // end of namespace amiro
