@@ -28,7 +28,7 @@ UserThread::~UserThread()
 }
 
 
-void UserThread::input()
+void UserThread::microphoneInput()
 {
     // input start
 
@@ -143,7 +143,7 @@ UserThread::main()
     while (!this->shouldTerminate())
     {
 
-        input();
+        microphoneInput();
 
         /*
         // int index = 0;
