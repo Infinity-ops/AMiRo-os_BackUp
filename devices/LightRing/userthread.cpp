@@ -30,7 +30,27 @@ UserThread::~UserThread()
 
 void UserThread::input()
 {
+    // input start
 
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\n%d : Input started\n", cycleNumber++);
+
+    i2sStart(&I2SD2, &global.i2scfg);
+    this->sleep(MS2ST(1000));
+    i2sStartExchange(&I2SD2);
+
+    int restTime = 56;
+    for(int i=0; i < restTime; i++)
+    {
+        this->sleep(MS2ST(1000));
+        // chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
+    }
+
+    i2sStopExchange(&I2SD2);
+    i2sStop(&I2SD2);
+    this->sleep(MS2ST(1000));
+
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nInput finished\n");
+    // input end
 }
 
 
@@ -116,34 +136,14 @@ UserThread::main()
     //  float meanval = 0;
     // double PI = 3.141592653589793238460;
 
-    int cycleNumber = 0;
+    cycleNumber = 0;
 
 
 
     while (!this->shouldTerminate())
     {
 
-        // input start
-
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"\n%d : Input started\n", cycleNumber++);
-
-        i2sStart(&I2SD2, &global.i2scfg);
-        this->sleep(MS2ST(1000));
-        i2sStartExchange(&I2SD2);
-
-        int restTime = 56;
-        for(int i=0; i < restTime; i++)
-        {
-            this->sleep(MS2ST(1000));
-            // chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
-        }
-
-        i2sStopExchange(&I2SD2);
-        i2sStop(&I2SD2);
-        this->sleep(MS2ST(1000));
-
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"\nInput finished\n");
-        // input end
+        input();
 
         /*
         // int index = 0;

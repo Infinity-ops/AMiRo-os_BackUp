@@ -15,6 +15,7 @@ public:
     virtual msg_t main();
 
 private:
+    int cycleNumber;
     void input();
 };
 
