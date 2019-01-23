@@ -27,6 +27,13 @@ UserThread::~UserThread()
 {
 }
 
+
+void UserThread::input()
+{
+
+}
+
+
 // Recursive function of FFT
 std::vector<cd> fft(std::vector<cd>& a)
 {
