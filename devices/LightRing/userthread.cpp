@@ -27,7 +27,7 @@ UserThread::~UserThread()
 {
 }
 
-void UserThread::sleep(int inSeconds)
+void UserThread::sleepForSec(int inSeconds)
 {
     for(int i = 0; i < inSeconds; i++)
     {
@@ -108,18 +108,7 @@ std::vector<cd> fft(std::vector<cd>& a)
 msg_t
 UserThread::main()
 {
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
-    this->sleep(MS2ST(1000));
+    sleepForSec(10);
 
     // FFT YAZ Debug
 //    std::vector<cd> a{1, 2, 3, 4};
@@ -183,9 +172,7 @@ UserThread::main()
 
         // FFT Call
 
-        this->sleep(MS2ST(1000));
-        this->sleep(MS2ST(1000));
-        this->sleep(MS2ST(1000));
+        sleepForSec(2);
 
 
         // std::vector<int16_t> dataVec;
@@ -232,9 +219,7 @@ UserThread::main()
 //        }
 //        // FFT End
 
-        this->sleep(MS2ST(1000));
-        this->sleep(MS2ST(1000));
-        this->sleep(MS2ST(1000));
+        sleepForSec(2);
 
     }
 
