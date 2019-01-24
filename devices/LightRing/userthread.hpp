@@ -21,6 +21,7 @@ private:
     void microphoneInput();
     void sleepForSec(int inSeconds);
     std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input);
+    void manualDftIncomplete();
 };
 
 } // end of namespace amiro
