@@ -5,7 +5,7 @@
  * @brief Stack size of the user thread object
  */
 #if !defined(USER_THREAD_STACK_SIZE) || defined(__DOXYGEN__)
-#define USER_THREAD_STACK_SIZE         1024
+#define USER_THREAD_STACK_SIZE         8084
 #endif
 
 /**
