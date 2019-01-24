@@ -25,6 +25,7 @@ private:
     void manualDftIncomplete();
     void printFftResult(const std::vector<std::complex<float> > &inFftInput,
                         const std::vector<std::complex<float> > &inFftOutput);
+    void lightOffAll();
 };
 
 } // end of namespace amiro

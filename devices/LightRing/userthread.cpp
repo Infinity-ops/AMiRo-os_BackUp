@@ -189,6 +189,14 @@ std::vector<cd> fft(std::vector<cd>& a)
 }
 
 
+void UserThread::lightOffAll()
+{
+    for(int i = 0; i < 8; i++)
+    {
+        global.robot.setLightColor(i, Color::BLACK);
+    }
+}
+
 msg_t
 UserThread::main()
 {
@@ -215,6 +223,16 @@ UserThread::main()
 
 
     chprintf((BaseSequentialStream*) &global.sercanmux1, "Init\n");
+
+    global.robot.setLightBrightness(2);
+    global.robot.setLightColor(3, Color::GREEN);
+    chprintf((BaseSequentialStream*) &global.sercanmux1, "Light Green\n");
+
+    sleepForSec(3);
+
+    chprintf((BaseSequentialStream*) &global.sercanmux1, "Light Off All\n");
+    lightOffAll();
+
     i2sInit();
 
 
@@ -252,7 +270,7 @@ UserThread::main()
 
         sleepForSec(1);
         chprintf((BaseSequentialStream*)&global.sercanmux1,"DFT Start\n");
-        vector<complex<float>> fftOutput = computeDft(fftInput);
+//        vector<complex<float>> fftOutput = computeDft(fftInput);
         chprintf((BaseSequentialStream*)&global.sercanmux1,"DFT Finished\n");
         sleepForSec(1);
 
@@ -263,12 +281,18 @@ UserThread::main()
 //        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT End\n");
 
 
-        printFftResult(fftInput, fftOutput);
+//        printFftResult(fftInput, fftOutput);
         // FFT End
+
+        global.robot.setLightBrightness(5);
+        global.robot.setLightColor(0, Color::RED);
+        global.robot.setLightColor(7, Color::BLUE);
 
         sleepForSec(2);
 
     }
+
+    chprintf((BaseSequentialStream*) &global.sercanmux1, "After While\n");
 
     return RDY_OK;
 }
