@@ -23,6 +23,8 @@ private:
     void sleepForSec(int inSeconds);
     std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input);
     void manualDftIncomplete();
+    void printFftResult(const std::vector<std::complex<float> > &inFftInput,
+                        const std::vector<std::complex<float> > &inFftOutput);
 };
 
 } // end of namespace amiro
