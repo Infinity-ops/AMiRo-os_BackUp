@@ -66,6 +66,26 @@ void UserThread::microphoneInput()
     // input end
 }
 
+void adjustData(std::vector<std::complex<float> > &outFftOutput)
+{
+    for(int i = 1,k=0; i < I2S_BUF_SIZE; i = i+2,k++)
+    {
+        uint32_t raw = global.i2s_rx_buf[i];
+        int16_t data = (raw & 0xFFFF);
+        if(data == 0){
+            data = (raw >> 16) & 0xFFFF;
+        }
+
+        // "data" is what you want aka the correct data
+        // put this value to a vector of complex<float>
+        outFftOutput.at(k) = static_cast<float>(data);
+        chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
+        dataVec.push_back(data);
+        // chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,", data);
+
+    }
+}
+
 
 vector<complex<float> > UserThread::computeDft(const vector<complex<float> > &input) {
 
@@ -168,8 +188,12 @@ UserThread::main()
 //        std::cout << b[i] << std::endl;
 //    }
 
-//      std::vector<cd> fftInput;
-//      fftInput.resize(I2S_BUF_SIZE/2);
+
+//    // should use this when taking input from microphone
+//    std::vector<cd> fftInput;
+//    fftInput.resize(I2S_BUF_SIZE/2);
+
+//    // this do not have any use. delete later
 //    std::vector<cd> fftResult;
 //    fftInput.resize(I2S_BUF_SIZE/2);
 
@@ -190,8 +214,8 @@ UserThread::main()
     while (!this->shouldTerminate())
     {
 
-        // microphoneInput();
-
+//        microphoneInput();
+//        adjustData(fftInput);
 
         // FFT Call
 
@@ -217,22 +241,6 @@ UserThread::main()
         sleepForSec(1);
 
 
-//        for(int i = 1,k=0; i < I2S_BUF_SIZE; i = i+2,k++)
-//        {
-//            uint32_t raw = global.i2s_rx_buf[i];
-//            int16_t data = (raw & 0xFFFF);
-//            if(data == 0){
-//                data = (raw >> 16) & 0xFFFF;
-//            }
-
-//            // "data" is what you want aka the correct data
-//            // put this value to a vector of complex<float>
-//            fftInput.at(k) = static_cast<float>(data);
-//            chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
-//            dataVec.push_back(data);
-//            // chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,", data);
-
-//        }
 
 
 
@@ -240,7 +248,8 @@ UserThread::main()
 
 
 
-        // FFT Start
+
+//        // FFT Start
 //        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT Start\n");
 //        std::vector<cd> fftOutput = fft(fftInput);
 //        chprintf((BaseSequentialStream*)&global.sercanmux1,"FFT End\n");

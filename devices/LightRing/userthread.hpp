@@ -19,6 +19,7 @@ public:
 private:
     int cycleNumber;
     void microphoneInput();
+    void adjustData(std::vector<std::complex<float> > &outFftOutput);
     void sleepForSec(int inSeconds);
     std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input);
     void manualDftIncomplete();
