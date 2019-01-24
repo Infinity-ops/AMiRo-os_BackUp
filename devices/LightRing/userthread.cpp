@@ -80,7 +80,7 @@ void adjustData(std::vector<std::complex<float> > &outFftOutput)
         // put this value to a vector of complex<float>
         outFftOutput.at(k) = static_cast<float>(data);
         chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
-        dataVec.push_back(data);
+        // dataVec.push_back(data);
         // chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,", data);
 
     }
@@ -105,7 +105,7 @@ vector<complex<float> > UserThread::computeDft(const vector<complex<float> > &in
     return output;
 }
 
-void printFftResult(const std::vector<std::complex<float> > &inFftInput,
+void UserThread::printFftResult(const std::vector<std::complex<float> > &inFftInput,
                     const std::vector<std::complex<float> > &inFftOutput)
 {
     chprintf((BaseSequentialStream*)&global.sercanmux1,"Index,Data,Frequency,Real,Imaginary,Abs\n");
