@@ -16,7 +16,7 @@ vector<complex<float> > computeDft(const vector<complex<float> > &input) {
     complex<float> i(0.0,1.0);
 
     size_t n = input.size();
-    for (size_t k = 0; k < n; k++) {  // For each output element
+    for (size_t k = 0; k < 26; k++) {  // For each output element
         complex<float> sum(0.0, 0.0);
         for (size_t t = 0; t < n; t++) {  // For each input element
             complex<float> angle = 2 * M_PI * t * k / n;
@@ -31,7 +31,7 @@ vector<complex<float> > computeDft(const vector<complex<float> > &input) {
 void printFftResult(const std::vector<std::complex<float> > &inFftInput,
                                 const std::vector<std::complex<float> > &inFftOutput)
 {
-    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_25_from_desktop/660hz_size500_DFT_output.csv");
+    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_25_from_desktop/660hz_size500_DFT_output_fRange0_800.csv");
     if (!myfile.is_open())
     {
         cout << "Unable to open file";
@@ -42,15 +42,27 @@ void printFftResult(const std::vector<std::complex<float> > &inFftInput,
     myfile << "Index,Data,Frequency,Real,Imaginary,Abs\n";
 
     float frequency = 0;
-    int fftOutputSize = inFftOutput.size();
-    float fftOutputSizeF = static_cast<float>(inFftOutput.size());
-    for(int i = 0; i < fftOutputSize; i++)
+
+    int fftInputSize = inFftInput.size();
+    float fftInputSizeF = static_cast<float>(inFftInput.size());
+
+    for(int i = 0; i < fftInputSize; i++)
     {
-        frequency = 32000.0 / fftOutputSizeF * static_cast<float>(i);
+        frequency = 32000.0 / fftInputSizeF * static_cast<float>(i);
 
 //        chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%f,%f,%f,%f,%f\n",
 //                 i, inFftInput.at(i).real(), frequency, inFftOutput.at(i).real(), inFftOutput.at(i).imag(), std::abs(inFftOutput.at(i)));
-        myfile << i << "," << inFftInput.at(i).real() << "," << frequency << "," << inFftOutput.at(i).real() << "," << inFftOutput.at(i).imag() << "," << std::abs(inFftOutput.at(i)) << endl;
+
+        if(i < inFftOutput.size())
+        {
+            myfile << i << "," << inFftInput.at(i).real() << "," << frequency << "," << inFftOutput.at(i).real() << "," << inFftOutput.at(i).imag() << "," << std::abs(inFftOutput.at(i)) << endl;
+        }
+        else
+        {
+            myfile << i << "," << inFftInput.at(i).real() << "," << frequency << "," << 0 << "," << 0 << "," << 0 << endl;
+        }
+
+
     }
 
 
