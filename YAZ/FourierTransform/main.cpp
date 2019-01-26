@@ -10,14 +10,14 @@ using namespace std;
 
 typedef complex<float> dcomp;
 
-vector<complex<float> > computeDft(const vector<complex<float> > &input) {
+vector<complex<float> > computeDft(const vector<complex<float> > &input, const int inFtRange) {
 
     vector<complex<float> > output;
     complex<float> i(0.0,1.0);
 
     size_t n = input.size();
-    // replace n with the any number; if you want fft result up to that range
-    for (size_t k = 0; k < n; k++) {  // For each output element
+    // replace n(from the outer loop) with the any number; if you want fft result up to that range
+    for (size_t k = 0; k < inFtRange; k++) {  // For each output element
         complex<float> sum(0.0, 0.0);
         for (size_t t = 0; t < n; t++) {  // For each input element
             complex<float> angle = 2 * M_PI * t * k / n;
@@ -32,7 +32,7 @@ vector<complex<float> > computeDft(const vector<complex<float> > &input) {
 void printFftResult(const std::vector<std::complex<float> > &inFftInput,
                                 const std::vector<std::complex<float> > &inFftOutput)
 {
-    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_26/660hz_size320_DFT_output_record1s_all.csv");
+    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_26/StepSize_acBufferSize_FtRange/660hz_size320_DFT_output_record1s_all_ftRange800hz.csv");
     if (!myfile.is_open())
     {
         cout << "Unable to open file";
@@ -103,7 +103,7 @@ void calculatingFFT()
     cout << "" << endl;
     cout << "" << endl;
 
-    vector<complex<float>> fftOutput = computeDft(fftInput);
+    vector<complex<float>> fftOutput = computeDft(fftInput, fftInput.size());
 
     for(int i = 0; i < fftOutput.size(); i++)
     {
@@ -187,10 +187,12 @@ int main()
 
     vector<complex<float>> fftInput(fftInput660_01.begin(), fftInput660_01.begin() + acBufferSize);
 
-    vector<complex<float>> fftOutput = computeDft(fftInput);
+    vector<complex<float>> fftOutput = computeDft(fftInput, ftRange + 1);
 
     cout << fftInput.size() << endl;
 
+    // adjust the data for the first ft result index
+    fftOutput.at(0) = 0;
     printFftResult(fftInput, fftOutput);
 
     cout << "END" << endl;
