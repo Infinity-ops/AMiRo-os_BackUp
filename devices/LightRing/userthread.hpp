@@ -27,6 +27,13 @@ private:
                         const std::vector<std::complex<float> > &inFftOutput);
     void lightOffAll();
     float ftThreshold(const std::vector<std::complex<float> > &inFftOutput);
+    float ftThreshold2(const std::vector<std::complex<float> > &inFftOutput);
+
+    void lightOnlyTheHightestFreq(const std::vector<std::complex<float> > &inFftOutput, int inFfRange);
+    void lightTillHighestFrequency(const std::vector<std::complex<float> > &inFftOutput, int inFfRange);
+
+    float maxFtValue;
+    int maxFtIndex;
 };
 
 } // end of namespace amiro
