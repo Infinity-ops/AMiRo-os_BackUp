@@ -45,14 +45,14 @@ void UserThread::microphoneInput()
 {
     // input start
 
-    chprintf((BaseSequentialStream*)&global.sercanmux1,"\n%d : Input started\n", cycleNumber++);
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nCycle %d : Input started\n", cycleNumber);
 
     i2sStart(&I2SD2, &global.i2scfg);
     this->sleep(MS2ST(1000));
     i2sStartExchange(&I2SD2);
 
-    int restTime = 56;
-    for(int i=0; i < restTime; i++)
+    int recordingTime = 1;
+    for(int i=0; i < recordingTime; i++)
     {
         this->sleep(MS2ST(1000));
         // chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
@@ -62,12 +62,16 @@ void UserThread::microphoneInput()
     i2sStop(&I2SD2);
     this->sleep(MS2ST(1000));
 
-    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nInput finished\n");
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nCycle %d : Input ended\n", cycleNumber);
+    cycleNumber++;
+
     // input end
 }
 
 void UserThread::adjustData(std::vector<std::complex<float> > &outFftOutput)
 {
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nAdjusting Data start\n");
+
     for(int i = 1,k=0; i < I2S_BUF_SIZE; i = i+2,k++)
     {
         uint32_t raw = global.i2s_rx_buf[i];
@@ -84,6 +88,7 @@ void UserThread::adjustData(std::vector<std::complex<float> > &outFftOutput)
 
 
     }
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nAdjusting Data end\n");
 
 
     // serialize input data
@@ -117,7 +122,7 @@ vector<complex<float> > UserThread::computeDft(const vector<complex<float> > &in
 void UserThread::printFftResult(const std::vector<std::complex<float> > &inFftInput,
                     const std::vector<std::complex<float> > &inFftOutput)
 {
-    chprintf((BaseSequentialStream*)&global.sercanmux1,"Index,Data,Frequency,Real,Imaginary,Abs\n");
+    chprintf((BaseSequentialStream*)&global.sercanmux1,"\nIndex,Data,Frequency,Real,Imaginary,Abs\n");
     float frequency = 0;
     int fftOutputSize = inFftOutput.size();
     float fftOutputSizeF = static_cast<float>(inFftOutput.size());
@@ -216,9 +221,10 @@ void UserThread::lightOffAll()
 msg_t
 UserThread::main()
 {
-    chprintf((BaseSequentialStream*) &global.sercanmux1, "Before Sleep 10\n");
-    sleepForSec(10);
-    chprintf((BaseSequentialStream*) &global.sercanmux1, "After Sleep 10\n");
+    chprintf((BaseSequentialStream*) &global.sercanmux1, "\nIn main()\n");
+    chprintf((BaseSequentialStream*) &global.sercanmux1, "\nBefore Sleep 15\n");
+    sleepForSec(15);
+    chprintf((BaseSequentialStream*) &global.sercanmux1, "\nAfter Sleep 15\n");
 
     // FFT YAZ Debug
 //    std::vector<cd> a{1, 2, 3, 4};
@@ -238,13 +244,11 @@ UserThread::main()
 //    fftInput.resize(I2S_BUF_SIZE/2);
 
 
-    chprintf((BaseSequentialStream*) &global.sercanmux1, "Init\n");
+//    chprintf((BaseSequentialStream*) &global.sercanmux1, "Init\n");
 
-    global.robot.setLightBrightness(2);
-    global.robot.setLightColor(3, Color::GREEN);
-    chprintf((BaseSequentialStream*) &global.sercanmux1, "Light Green\n");
-
-    sleepForSec(3);
+//    global.robot.setLightBrightness(2);
+//    global.robot.setLightColor(3, Color::GREEN);
+//    chprintf((BaseSequentialStream*) &global.sercanmux1, "Light Green\n");
 
     chprintf((BaseSequentialStream*) &global.sercanmux1, "Light Off All\n");
     lightOffAll();
@@ -263,15 +267,16 @@ UserThread::main()
 
     while (!this->shouldTerminate())
     {
-        chprintf((BaseSequentialStream*) &global.sercanmux1, "While Start 10\n");
-        sleepForSec(10);
+        int sleepBeforeRecording = 2;
+        chprintf((BaseSequentialStream*) &global.sercanmux1, "\nRecording starting in %d\n", sleepBeforeRecording);
+        sleepForSec(sleepBeforeRecording);
 
         microphoneInput();
         adjustData(fftInput);
 
         // FFT Call
 
-        sleepForSec(2);
+//        sleepForSec(2);
 
 
 
@@ -286,11 +291,11 @@ UserThread::main()
         // vector<complex<float>> fftInput = {-1653,-1653,-1652,-1652,-1651,-1649,-1649,-1647,-1647,-1646,-1645,-1646,-1648,-1646,-1646,-1646,-1644,-1644,-1644,-1644,-1645,-1647,-1648,-1649,-1649,-1650,-1651,-1652,-1653,-1653,-1653,-1654,-1655,-1656,-1658,-1658,-1658,-1659,-1660,-1661,-1661,-1662,-1663,-1663,-1665,-1665,-1665,-1667,-1668,-1667,-1667,-1669,-1670,-1671,-1672,-1674,-1674,-1676,-1678,-1680,-1681,-1681,-1681,-1682,-1684,-1685,-1686,-1687,-1688,-1689,-1690,-1691,-1691,-1690,-1691,-1691,-1691,-1692,-1693,-1693,-1694,-1695,-1695,-1694,-1695,-1694,-1694,-1696,-1695,-1694,-1695,-1696,-1696,-1695,-1695,-1695,-1694,-1693,-1692,-1692,-1691,-1691,-1690,-1689,-1687,-1686,-1685,-1684,-1684,-1684,-1682,-1681,-1680,-1679,-1677,-1676,-1676,-1676,-1675,-1675,-1674,-1671,-1669,-1668,-1667,-1666,-1665,-1664,-1664,-1665,-1663,-1662,-1661,-1660,-1659,-1659,-1659,-1658,-1658,-1658,-1657,-1655,-1655,-1655,-1655,-1654,-1652,-1651,-1650,-1650,-1650,-1649,-1648,-1647,-1646,-1645,-1644,-1644,-1644,-1644,-1644,-1645,-1645,-1644,-1644,-1643,-1643,-1644,-1645,-1646,-1647,-1650,-1652,-1652,-1651,-1652,-1653,-1654,-1656,-1656,-1657,-1657,-1658,-1660,-1662,-1662,-1662,-1663,-1663,-1663,-1664,-1665,-1665,-1666,-1669,-1670,-1670,-1671,-1672,-1673,-1673,-1673,-1675,-1676};
         // vector<complex<float>> fftInput = { 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0 };
 
-        sleepForSec(1);
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"DFT Start\n");
+//        sleepForSec(1);
+//        chprintf((BaseSequentialStream*)&global.sercanmux1,"DFT Start\n");
 //        vector<complex<float>> fftOutput = computeDft(fftInput);
-        chprintf((BaseSequentialStream*)&global.sercanmux1,"DFT Finished\n");
-        sleepForSec(1);
+//        chprintf((BaseSequentialStream*)&global.sercanmux1,"DFT Finished\n");
+//        sleepForSec(1);
 
 
 //        // FFT Start
@@ -317,7 +322,7 @@ UserThread::main()
 //            }
 //        }
 
-        sleepForSec(2);
+//        sleepForSec(2);
 
     }
 
