@@ -21,11 +21,12 @@ private:
     void microphoneInput();
     void adjustData(std::vector<std::complex<float> > &outFftOutput);
     void sleepForSec(int inSeconds);
-    std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input);
+    std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input, const int inFtRange);
     void manualDftIncomplete();
     void printFftResult(const std::vector<std::complex<float> > &inFftInput,
                         const std::vector<std::complex<float> > &inFftOutput);
     void lightOffAll();
+    float ftThreshold(const std::vector<std::complex<float> > &inFftOutput);
 };
 
 } // end of namespace amiro

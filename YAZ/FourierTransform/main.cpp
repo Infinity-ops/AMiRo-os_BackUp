@@ -32,7 +32,7 @@ vector<complex<float> > computeDft(const vector<complex<float> > &input, const i
 void printFftResult(const std::vector<std::complex<float> > &inFftInput,
                                 const std::vector<std::complex<float> > &inFftOutput)
 {
-    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_26/StepSize_acBufferSize_FtRange/660hz_size320_DFT_output_record1s_all_ftRange1600hz.csv");
+    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_26/StepSize_acBufferSize_FtRange/660hz_size320_DFT_output_record1s_all_ftRange3200hz.csv");
     if (!myfile.is_open())
     {
         cout << "Unable to open file";
@@ -164,7 +164,7 @@ int main()
 
 
     int low = 0;
-    int high = 1600;
+    int high = 3200;
     int stepSize = 100;
 
     int acBufferSize = 32000 / stepSize;
@@ -195,6 +195,15 @@ int main()
     // adjust the data for the first ft result index
     fftOutput.at(0) = 0;
     printFftResult(fftInput, fftOutput);
+
+    float sum = 0;
+    for(int i = 0; i < fftOutput.size(); i++)
+    {
+        sum += std::abs(fftOutput.at(i));
+        cout << "Sum : " << sum << endl;
+    }
+    float average = sum / static_cast<float>(fftOutput.size());
+    cout << "Average : " << average << endl;
 
     cout << "END" << endl;
 
