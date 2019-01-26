@@ -32,7 +32,7 @@ vector<complex<float> > computeDft(const vector<complex<float> > &input, const i
 void printFftResult(const std::vector<std::complex<float> > &inFftInput,
                                 const std::vector<std::complex<float> > &inFftOutput)
 {
-    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_26/StepSize_acBufferSize_FtRange/660hz_size320_DFT_output_record1s_all_ftRange800hz.csv");
+    ofstream myfile ("/homes/yazad/ASE_3.0/amiro-os/Output/DFT_26/StepSize_acBufferSize_FtRange/660hz_size320_DFT_output_record1s_all_ftRange1600hz.csv");
     if (!myfile.is_open())
     {
         cout << "Unable to open file";
@@ -164,8 +164,9 @@ int main()
 
 
     int low = 0;
-    int high = 800;
+    int high = 1600;
     int stepSize = 100;
+
     int acBufferSize = 32000 / stepSize;
     vector<int> frequencyList;
     frequencyList.resize(acBufferSize);
@@ -182,14 +183,14 @@ int main()
         // cout << frequencyList.at(i) << endl;
 
     }
-    cout << ftRange << endl;
+    cout << "ftRange : " << ftRange << endl;
 
 
     vector<complex<float>> fftInput(fftInput660_01.begin(), fftInput660_01.begin() + acBufferSize);
 
     vector<complex<float>> fftOutput = computeDft(fftInput, ftRange + 1);
 
-    cout << fftInput.size() << endl;
+    cout << "fftInput.size() : " << fftInput.size() << endl;
 
     // adjust the data for the first ft result index
     fftOutput.at(0) = 0;
