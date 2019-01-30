@@ -34,6 +34,8 @@ private:
 
     float maxFtValue;
     int maxFtIndex;
+
+    void mockDataFftInput(std::vector<std::complex<float>> &outFftInput);
 };
 
 } // end of namespace amiro
