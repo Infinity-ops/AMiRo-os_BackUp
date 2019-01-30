@@ -440,6 +440,14 @@ UserThread::main()
 
         lightTillHighestFrequency(fftOutput, ftRange);
 
+        // shows light till the highest frequency
+        float maxIndex = ftThreshold2(fftOutput);
+
+        int baseSpeed = 10000000;
+        int multiplier = maxIndex * 3;
+        int motorSpeed = maxIndex * baseSpeed;
+        global.robot.setTargetSpeed(motorSpeed, -motorSpeed);
+
     }
 
     chprintf((BaseSequentialStream*) &global.sercanmux1, "After While\n");
