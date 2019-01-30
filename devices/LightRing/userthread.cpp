@@ -244,6 +244,16 @@ void UserThread::lightTillHighestFrequency(const std::vector<std::complex<float>
     }
 }
 
+void UserThread::motorControl(std::vector<std::complex<float>> &outFftInput)
+{
+    // shows light till the highest frequency
+    float maxIndex = ftThreshold2(outFftInput);
+
+    int baseSpeed = 10000000 * 4;
+    int motorSpeed = maxIndex * baseSpeed;
+    global.robot.setTargetSpeed(motorSpeed, -motorSpeed);
+}
+
 void UserThread::manualDftIncomplete()
 {
 //    // DFT Manual
@@ -445,12 +455,7 @@ UserThread::main()
 
         lightTillHighestFrequency(dftOutput, ftRange);
 
-        // shows light till the highest frequency
-        float maxIndex = ftThreshold2(dftOutput);
-
-        int baseSpeed = 10000000 * 4;
-        int motorSpeed = maxIndex * baseSpeed;
-        global.robot.setTargetSpeed(motorSpeed, -motorSpeed);
+        motorControl(dftOutput);
 
     }
 

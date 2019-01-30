@@ -37,6 +37,8 @@ private:
 
     void mockDataFftInput(std::vector<std::complex<float>> &outFftInput);
     void ftSpecifications(int &outFtRange, int &outAcBufferSize);
+
+    void motorControl(std::vector<std::complex<float>> &outFftInput);
 };
 
 } // end of namespace amiro
