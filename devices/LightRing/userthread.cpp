@@ -279,9 +279,11 @@ void UserThread::ftSpecifications(int &outFtRange, int &outAcBufferSize)
 {
     int low = 0;
     int high = 800;
-    int stepSize = 100;
+    int lightNumber = 8;
 
+    int stepSize = (high - low) / lightNumber;
     outAcBufferSize = 32000 / stepSize;
+
     vector<int> frequencyList;
     frequencyList.resize(outAcBufferSize);
 
