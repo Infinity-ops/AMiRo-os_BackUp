@@ -51,7 +51,7 @@ void UserThread::microphoneInput()
     chprintf((BaseSequentialStream*)&global.sercanmux1,"\nCycle %d : Input started\n", cycleNumber);
 
     i2sStart(&I2SD2, &global.i2scfg);
-    this->sleep(MS2ST(1000));
+    this->sleep(MS2ST(100));
     i2sStartExchange(&I2SD2);
 
     int recordingTime = 1;
@@ -62,8 +62,8 @@ void UserThread::microphoneInput()
     }
 
     i2sStopExchange(&I2SD2);
+    this->sleep(MS2ST(100));
     i2sStop(&I2SD2);
-    this->sleep(MS2ST(1000));
 
     chprintf((BaseSequentialStream*)&global.sercanmux1,"\nCycle %d : Input ended\n", cycleNumber);
     cycleNumber++;
