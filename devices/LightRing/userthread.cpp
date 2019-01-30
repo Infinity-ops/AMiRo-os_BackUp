@@ -85,6 +85,8 @@ void UserThread::adjustData(std::vector<std::complex<float> > &outFftInput)
 
         // "data" is what you want aka the correct data
         // put this value to a vector of complex<float>
+        // complex<flaot> _example = 1.0;
+        // output : (1.0, 0.0)
         outFftInput.at(k) = static_cast<float>(data);
         // chprintf((BaseSequentialStream*)&global.sercanmux1,"%d,%d\n", i, data);
         // dataVec.push_back(data);
@@ -333,7 +335,8 @@ UserThread::main()
 
 
     // should use this when taking input from microphone
-    std::vector<cd> fftInput;
+    // it's a vector of complex nubmers
+    vector<complex<float>> fftInput;
     fftInput.resize(I2S_BUF_SIZE/2);
 
 
