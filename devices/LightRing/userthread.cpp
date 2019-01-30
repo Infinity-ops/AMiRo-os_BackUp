@@ -400,12 +400,6 @@ UserThread::main()
         vector<complex<float>> fftOutput = computeDft(fftInputTruncated, ftRange + 1);
 
 
-//        sleepForSec(1);
-
-//        vector<complex<float>> fftOutput = computeDft(fftInput);
-
-//        sleepForSec(1);
-
 
         // adjust the data for the first ft result index
         fftOutput.at(0) = 0;
