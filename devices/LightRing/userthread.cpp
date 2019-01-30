@@ -54,12 +54,7 @@ void UserThread::microphoneInput()
     this->sleep(MS2ST(100));
     i2sStartExchange(&I2SD2);
 
-    int recordingTime = 1;
-    for(int i=0; i < recordingTime; i++)
-    {
-        this->sleep(MS2ST(500));
-        // chprintf((BaseSequentialStream*) &global.sercanmux1,"s:%d", i);
-    }
+    this->sleep(MS2ST(500));
 
     i2sStopExchange(&I2SD2);
     this->sleep(MS2ST(100));
@@ -275,21 +270,24 @@ void UserThread::manualDftIncomplete()
 }
 
 
-void UserThread::ftSpecifications(int &outFtRange, int &outAcBufferSize)
+void UserThread::ftSpecifications(int &outFtRange, int &outNecessaryBufferSize)
 {
+    // the lowest frequncy range we want to measure
     int low = 0;
+    // the highest frequncy range we want to measure
     int high = 800;
     int lightNumber = 8;
 
+    // or we can say how accurate we want our frequncy calculation will be
     int stepSize = (high - low) / lightNumber;
-    outAcBufferSize = 32000 / stepSize;
+    outNecessaryBufferSize = 32000 / stepSize;
 
     vector<int> frequencyList;
-    frequencyList.resize(outAcBufferSize);
+    frequencyList.resize(outNecessaryBufferSize);
 
-    for(int i = 0; i < outAcBufferSize; i++)
+    for(int i = 0; i < outNecessaryBufferSize; i++)
     {
-        frequencyList.at(i) = 32000.0 / static_cast<float> (outAcBufferSize) * static_cast<float> (i);
+        frequencyList.at(i) = 32000.0 / static_cast<float> (outNecessaryBufferSize) * static_cast<float> (i);
 
         if(frequencyList.at(i) < high)
         {
@@ -371,10 +369,15 @@ UserThread::main()
     chprintf((BaseSequentialStream*) &global.sercanmux1, "\nAfter Sleep 15\n");
 
 
+    // since we are using the data from one channel, the final input from the microphone
+    // which we get in i2s_rx_buf; will be half of that
+    // let's say i2s_rx_buff size is 2000
+    // so one channel of data will be about 1000
+    // we are using only one channel, so we are doing ft with 1000
     // should use this when taking input from microphone
     // it's a vector of complex nubmers
-    vector<complex<float>> fftInput;
-    fftInput.resize(I2S_BUF_SIZE/2);
+    vector<complex<float>> dftInput;
+    dftInput.resize(I2S_BUF_SIZE/2);
 
 
     chprintf((BaseSequentialStream*) &global.sercanmux1, "Light Off All\n");
@@ -394,24 +397,26 @@ UserThread::main()
         sleepForSec(sleepBeforeRecording);
 
         microphoneInput();
-        adjustData(fftInput);
+        adjustData(dftInput);
 
 
 
-
+        // for how many values of the data we acutally need to calculate the FT
+        // we don't care about values that represents frequncy that is more that 800 for example
         int ftRange = 0;
-        int acBufferSize = 0;
-        ftSpecifications(ftRange, acBufferSize);
+        // to calculate FT of the first ftRange(e.g first 10 values) values, how big the dataset shuld be
+        int necessaryBufferSize = 0;
+        ftSpecifications(ftRange, necessaryBufferSize);
 
-        vector<complex<float>> fftInputTruncated(fftInput.begin(), fftInput.begin() + acBufferSize);
+        vector<complex<float>> dftInputNecessary(dftInput.begin(), dftInput.begin() + necessaryBufferSize);
 
 
-        vector<complex<float>> fftOutput = computeDft(fftInputTruncated, ftRange + 1);
+        vector<complex<float>> dftOutput = computeDft(dftInputNecessary, ftRange + 1);
 
 
 
         // adjust the data for the first ft result index
-        fftOutput.at(0) = 0;
+        dftOutput.at(0) = 0;
         // printFftResult(fftInputTruncated, fftOutput);
 
 //        vector<float> fftOutputAbsolute = {0,1135.58654,1358.63610,4564.55175,3124.11181,1135.00305,690.08038,435.53344,359.72653,303.64587,512.12915,160.51707,199.17561,210.07049,245.58178,138.29951,131.66738,178.47999,99.00965,116.28580,96.63494,103.13957,95.05598,81.16582,78.25346,85.53370,64.28251,41.18144,89.08612,74.96069,84.18582,63.13232,77.08586,75.73348,73.70004,60.91404,51.86021,45.84040,38.94847,27.97813,65.98235,34.58185,46.01984,58.05112,64.51342,108.54753,24.54235,27.73278,76.02766,63.02331,11.38394,8.79509,43.17379,46.83200,46.77915,25.55215,15.86886,60.95971,67.68765,4.54389,32.70319,58.50863,43.78678,56.82464,32.05156,47.65341,53.74621,20.65540,62.29689,52.31645,21.01792,23.66131,53.86732,19.74291,9.58077,31.65172,29.82717,26.68946,37.73799,29.71418,34.79859,23.04648,37.73220,34.42855,24.47649,27.43594,24.66086,19.07671,24.67285,32.92256,9.99378,24.76587,46.68445,4.30438,19.52642,29.74738,27.75021,21.74477,11.74843,34.97548,32.71369,25.63313,29.12622,29.29659,22.71945,4.23972,30.31164,18.86420,16.81499,22.66192,15.08509,15.05417,34.83185,22.93190,31.59764,25.60832,19.69113,32.13681,5.64386,25.26600,11.17863,19.10688,26.75739,24.35874,36.91413,14.45388,15.59971,18.00393,2.64098,15.14873,10.62753,14.11282,20.98804,26.55543,11.22896,39.34543,36.89253,25.48628,38.08795,22.22427,35.33192,9.15398,15.15412,17.99653,24.43990,29.87902,12.95891,2.29028,12.32517,10.03769,25.70044,15.48093,30.33620,40.20777,25.73522,6.43233,15.75259,26.99877,24.68230,11.39602,11.72649,6.92379,18.67016,27.45854,28.68862,27.74070,8.02009,11.99758,5.14344,22.07382,16.48616,20.98086,9.52464,12.19233,10.26001,16.03654,14.80008,15.93072,13.32250,18.54465,7.37183,24.03082,16.02125,19.05282,17.15705,14.98963,20.22596,18.46969,11.44010,9.48563,3.84351,8.75838,17.42191,17.98804,20.01135,19.48734,14.28802,13.76718,17.70730,23.20265,23.49524,19.35447,8.40192,13.95838,17.06327,21.97187,15.80750,16.25995,20.93070,15.51583,21.22384,16.78016,20.25436,6.56640,17.44149,14.41351,19.22742,12.27899,16.68981,8.26856,18.07604,15.09798,15.98129,27.52808,17.00525,20.22955,19.78676,8.34591,7.76133,17.68037,14.78392,14.33714,16.52656,9.31404,23.24482,14.43461,5.13880,8.29393,8.45559,15.49298,14.44519,15.91646,11.09406,10.91911,10.05277,12.64548,14.81782,8.49898,6.82637,16.99791,20.50204,6.64691,8.45424,14.45053,14.05911,9.22116,11.03659,10.92480,16.62648,15.05360,15.48065,9.10398,8.46188,5.51433,14.91740,22.69008,9.62279,16.19551,14.30736,15.11512,17.44508,7.68922,8.15136,20.09874,20.49987,17.27722,28.62774,13.92529,15.53731,16.74232,8.80691,16.28188,12.37586,19.19651,14.54891,17.35512,6.63714,20.26824,16.62825,21.68381,15.69805,21.35045,16.13405,15.72231,23.65569,17.15987,14.02875,7.22036,17.31218,23.96635,22.98090,16.89306,13.70776,13.41512,17.72670,20.97247,16.97541,17.17542,8.29173,4.08567,9.61117,11.42740,18.75764,20.65382,14.96527,17.56876,19.58419,15.59718,23.28360,7.22472,18.28973,13.39337,16.89610,14.28893,15.52311,10.22240,12.06157,9.17924,19.90617,16.49221,22.29700,4.85800,11.57049,8.15477,27.46483,28.40716,27.56348,18.07001,6.93226,11.32075,11.41290,23.60334,27.95220,15.43354,6.16956,25.86453,40.23092,29.90480,19.25693,24.15211,12.93441,12.80164,2.77849,13.03530,30.53557,24.10795,16.64621,14.89914,9.74286,33.80143,22.15656,37.63497,25.64249,39.88339,39.04744,11.16534,26.85547,20.08391,14.29353,10.67641,17.25583,2.77230,18.00082,15.85026,13.80373,37.01491,23.62702,26.34373,18.66083,11.74245,25.21574,7.29103,32.29884,16.31185,26.40189,32.98777,23.02452,34.82846,14.71004,15.27859,21.85267,15.63563,19.82508,30.47277,3.86649,22.82616,30.77114,29.82299,25.50796,32.96940,35.51892,12.42663,21.75348,27.61502,28.98136,18.76648,3.77303,47.59134,26.24151,7.04554,33.10654,24.92718,18.50324,24.48365,27.54336,24.53269,33.42235,38.21719,22.71203,33.62369,29.82418,33.68056,27.15046,29.66362,31.01936,9.91645,22.31679,53.58171,23.60783,21.00846,52.15563,63.64894,21.35130,53.26783,47.44976,24.99580,57.07971,43.96496,58.12771,34.10749,4.70391,66.62628,60.55607,15.89721,26.18955,47.68880,44.82159,41.63823,9.15083,11.50395,62.93771,75.78726,22.60961,26.25051,108.69568,65.21578,58.53554,45.59320,34.32519,66.38587,28.20651,34.38099,46.55830,52.55696,60.79694,74.09638,77.15715,77.82113,62.58272,82.60779,74.71032,89.40252,41.54298,64.64408,85.11981,77.98589,80.61627,95.44821,102.90898,96.52040,116.61956,98.18675,178.82618,131.27717,138.53892,245.31646,210.17016,191.58605,161.94012,511.77206,304.78277,361.95156,435.50210,689.67474,1135.26049,3124.25830,4563.63671,1358.02453,1135.86486};
@@ -438,13 +443,12 @@ UserThread::main()
 //        }
 
 
-        lightTillHighestFrequency(fftOutput, ftRange);
+        lightTillHighestFrequency(dftOutput, ftRange);
 
         // shows light till the highest frequency
-        float maxIndex = ftThreshold2(fftOutput);
+        float maxIndex = ftThreshold2(dftOutput);
 
-        int baseSpeed = 10000000;
-        int multiplier = maxIndex * 3;
+        int baseSpeed = 10000000 * 4;
         int motorSpeed = maxIndex * baseSpeed;
         global.robot.setTargetSpeed(motorSpeed, -motorSpeed);
 
