@@ -140,6 +140,7 @@ void middleChunkOfVector()
 
 
     vector<int> _temp2(_temp.begin() + startMiddelPoint, _temp.begin() + endMiddelPoint);
+    cout << "Truncated vector size : " << _temp2.size() << endl;
 
     cout << endl;
     for(int i = 0; i < _temp2.size(); i++)

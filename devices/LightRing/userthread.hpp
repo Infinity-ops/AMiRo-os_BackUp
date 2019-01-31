@@ -23,7 +23,7 @@ private:
     void sleepForSec(int inSeconds);
     std::vector<std::complex<float> > computeDft(const std::vector<std::complex<float> > &input, const int inFtRange);
     void manualDftIncomplete();
-    void printFftResult(const std::vector<std::complex<float> > &inFftInput,
+    void printDftResult(const std::vector<std::complex<float> > &inFftInput,
                         const std::vector<std::complex<float> > &inFftOutput);
     void lightOffAll();
     float ftThreshold(const std::vector<std::complex<float> > &inFftOutput);
@@ -39,6 +39,9 @@ private:
     void ftSpecifications(int &outFtRange, int &outAcBufferSize);
 
     void motorControl(std::vector<std::complex<float>> &outFftInput);
+
+    void middleChunkOfVector(std::vector<std::complex<float>> &inFftInput,
+                             int &outStartPoint, int &outEndPoint, int inWindowSize);
 };
 
 } // end of namespace amiro
