@@ -1,0 +1,5 @@
+The reasone we did 14 bit shift is, because in the pdf there was a mention(page 7) that the data is 18 bit precision so we did (32-18)=14 bit shift : https://cdn-shop.adafruit.com/product-files/3421/i2S+Datasheet.PDF
+
+Also in page no 7, there is a mention of 24 bit data format. and 32-24=8. Basicallz we were trzing out stuff 
+
+Mail from Thomas and i2s standard : Page 749 https://www.st.com/content/ccc/resource/technical/document/reference_manual/59/b9/ba/7f/11/af/43/d5/CD00171190.pdf/files/CD00171190.pdf/jcr:content/translations/en.CD00171190.pdf 
